@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faX, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -13,9 +13,26 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 export const MainNavbar = () => {
     const { store, actions } = useContext(Context);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, []);
+
+    const handleLogout = () => {
+        actions.logOut();
+        setIsAuthenticated(false);
+        navigate('/login');
+    };
 
     return (
-        <Navbar bg="dark" data-bs-theme="dark" collapseOnSelect expand="lg" className="bg-body-tertiary">
+        <Navbar bg="blak" data-bs-theme="dark" collapseOnSelect expand="lg" className="bg-body-secondary border-bottom border-white">            
             <Container>
                 <Navbar.Brand href="/">
                     <img
@@ -25,32 +42,47 @@ export const MainNavbar = () => {
                         className="d-inline-block align-top"
                         alt="Logotipo"
                     />
-                </Navbar.Brand>
+                </Navbar.Brand>                
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav" className="d-flex justify-content-end">
-                    <Nav>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="warning" id="dropdown-basic" >
-                                Favoritos <Badge pill bg="light" text="dark">{store.favorites.length}</Badge>
-                            </Dropdown.Toggle>
-                            {store.favorites.length > 0 ? (
-                                <Dropdown.Menu>
-								{store.favorites.map((favorite) => (
-									<Link key={favorite.uid} className="d-flex gap-2 w-100 justify-content-between py-1 px-3" to={favorite.url} resource={favorite.resource}>
-										{favorite.name}
-										<div className="delete-task text-danger" onClick={(e) => actions.deleteFavorite(favorite)}>
-											<FontAwesomeIcon icon={faX} />
-										</div>
-									</Link>
-								))}
-							</Dropdown.Menu>
-                            ) : (
-                                <Dropdown.Menu className="py-1 px-3 w-100">0 favoritos</Dropdown.Menu>
-                            )}
-                        </Dropdown>
+                    <Nav>                        
+                        {isAuthenticated && (
+                            <Dropdown>
+                                <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                                    Favoritos <Badge pill bg="light" text="dark">{store.favorites.length}</Badge>
+                                </Dropdown.Toggle>
+                                {store.favorites.length > 0 ? (
+                                    <Dropdown.Menu>
+                                        {store.favorites.map((favorite) => (
+                                            <Link key={favorite.uid} className="d-flex gap-2 w-100 justify-content-between py-1 px-3" to={favorite.url} resource={favorite.resource}>
+                                                {favorite.name}
+                                                <div className="delete-task text-danger" onClick={(e) => actions.deleteFavorite(favorite)}>
+                                                    <FontAwesomeIcon icon={faX} />
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </Dropdown.Menu>
+                                ) : (
+                                    <Dropdown.Menu className="py-1 px-3 w-100">0 favoritos</Dropdown.Menu>
+                                )}
+                            </Dropdown>
+                        )}
+
+                        {isAuthenticated ? (
+                            <>
+                                
+                                <Nav.Link as={Link} to="/" onClick={handleLogout}  className="text-white">Cerrar Sesión</Nav.Link>
+                            </>
+                        ) : (
+                            <>
+                               
+                                <Nav.Link as={Link} to="/login"  className="text-white">Iniciar Sesión</Nav.Link>
+                                <Nav.Link as={Link} to="/signup" className="text-white">Registrarse</Nav.Link>
+                            </>
+                        )}
                     </Nav>
                 </Navbar.Collapse>
-            </Container>
+            </Container>           
         </Navbar>
-    )
-}
+    );
+};

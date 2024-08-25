@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext.js";
 import "../../styles/home.css";
-
+import { useNavigate } from "react-router-dom";
 import { Container } from 'react-bootstrap';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -12,9 +12,15 @@ import ResourceCard from "../component/resourceCard.js";
 export const Home = () => {
 
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        actions.getSWAPI('people');
+
+        const token = localStorage.getItem('token');
+		if (!token) {
+			navigate('/login');
+		}
+		actions.getSWAPI('people');
         actions.getSWAPI('planets');
         actions.getSWAPI('vehicles')
     }, []);
