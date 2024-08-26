@@ -45,7 +45,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             
             login: async (email, password) => {
                 try {
-                    let response = await fetch(`${process.env.BACKEND_URL}api/login`, {
+                    let response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -55,6 +55,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                             "password": password
                         })
                     });
+
+                    console.log("Response:", response);
 
                     const data = await response.json();
                     if (!data.msg) {
@@ -70,7 +72,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             signIn: async (email, password, name) => {
                 try {
-                    let response = await fetch(`${process.env.BACKEND_URL}api/register`, {
+                    let response = await fetch(`${process.env.BACKEND_URL}/api/register`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"

@@ -71,7 +71,7 @@ export const MainNavbar = () => {
                         {isAuthenticated ? (
                             <>
                                 
-                                <Nav.Link as={Link} to="/" onClick={handleLogout}  className="text-white">Cerrar Sesión</Nav.Link>
+                                <Nav.Link as={Link} onClick={handleLogout}  className="text-white">Cerrar Sesión</Nav.Link>
                             </>
                         ) : (
                             <>
