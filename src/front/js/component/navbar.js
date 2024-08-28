@@ -10,20 +10,21 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Badge from 'react-bootstrap/Badge';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Button } from "react-bootstrap";
 
 export const MainNavbar = () => {
     const { store, actions } = useContext(Context);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
-
+    const token = localStorage.getItem('token');
     useEffect(() => {
-        const token = localStorage.getItem('token');
+
         if (token) {
             setIsAuthenticated(true);
         } else {
             setIsAuthenticated(false);
         }
-    }, []);
+    }, [token]);
 
     const handleLogout = () => {
         actions.logOut();
@@ -32,7 +33,7 @@ export const MainNavbar = () => {
     };
 
     return (
-        <Navbar bg="blak" data-bs-theme="dark" collapseOnSelect expand="lg" className="bg-body-secondary border-bottom border-white">            
+        <Navbar bg="blak" data-bs-theme="dark" collapseOnSelect expand="lg" className="bg-body-secondary border-bottom border-white">
             <Container>
                 <Navbar.Brand href="/">
                     <img
@@ -42,10 +43,10 @@ export const MainNavbar = () => {
                         className="d-inline-block align-top"
                         alt="Logotipo"
                     />
-                </Navbar.Brand>                
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav" className="d-flex justify-content-end">
-                    <Nav>                        
+                    <Nav>
                         {isAuthenticated && (
                             <Dropdown>
                                 <Dropdown.Toggle variant="warning" id="dropdown-basic">
@@ -53,14 +54,16 @@ export const MainNavbar = () => {
                                 </Dropdown.Toggle>
                                 {store.favorites.length > 0 ? (
                                     <Dropdown.Menu>
-                                        {store.favorites.map((favorite) => (
-                                            <Link key={favorite.uid} className="d-flex gap-2 w-100 justify-content-between py-1 px-3" to={favorite.url} resource={favorite.resource}>
+                                        {store.favorites.map((favorite) => {
+                                            console.log(favorite)
+                                            return <Link key={favorite.uid} className="d-flex gap-2 w-100 justify-content-between py-1 px-3" to={favorite.url} resource={favorite.resource}>
                                                 {favorite.name}
                                                 <div className="delete-task text-danger" onClick={(e) => actions.deleteFavorite(favorite)}>
                                                     <FontAwesomeIcon icon={faX} />
                                                 </div>
                                             </Link>
-                                        ))}
+                                        }
+                                        )}
                                     </Dropdown.Menu>
                                 ) : (
                                     <Dropdown.Menu className="py-1 px-3 w-100">0 favoritos</Dropdown.Menu>
@@ -70,19 +73,19 @@ export const MainNavbar = () => {
 
                         {isAuthenticated ? (
                             <>
-                                
-                                <Nav.Link as={Link} onClick={handleLogout}  className="text-white">Cerrar Sesión</Nav.Link>
+
+                                <Button onClick={handleLogout} className="text-white">Cerrar Sesión</Button>
                             </>
                         ) : (
                             <>
-                               
-                                <Nav.Link as={Link} to="/login"  className="text-white">Iniciar Sesión</Nav.Link>
-                                <Nav.Link as={Link} to="/signup" className="text-white">Registrarse</Nav.Link>
+                                <button className="btn btn-primary me-2" onClick={() => navigate("/login")}>Iniciar Sesión</button>
+                                <button className="btn btn-secondary" onClick={() => navigate("/signup")}>Registrarse</button>
+                                
                             </>
                         )}
                     </Nav>
                 </Navbar.Collapse>
-            </Container>           
+            </Container>
         </Navbar>
     );
 };
